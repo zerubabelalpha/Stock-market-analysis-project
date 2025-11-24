@@ -3,3 +3,4 @@
 .vscode
 .pytest_cache/
 python.code-workspace
+/scripts/__pycache__
