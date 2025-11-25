@@ -6,20 +6,13 @@ import seaborn as sns
 import talib
 
 class FinancialDataLoader:
-    """Handles loading and preparation of financial data"""
+   
     
     def __init__(self):
         self.data = None
         
     def load_from_csv(self, file_path, date_col='Date', index_col=None):
-        """
-        Load financial data from CSV file
         
-        Args:
-            file_path (str): Path to CSV file
-            date_col (str): Name of date column
-            index_col (str): Column to use as index
-        """
         try:
             self.data = pd.read_csv(file_path, parse_dates=[date_col])
             if index_col:

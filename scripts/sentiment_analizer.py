@@ -5,7 +5,6 @@ import seaborn as sns
 from textblob import TextBlob
 import re
 from collections import Counter
-import warnings
 from datetime import datetime
 import logging
 
@@ -16,18 +15,10 @@ logger = logging.getLogger(__name__)
 
 
 class FinancialSentimentAnalyzer:
-    """
-    A comprehensive analyzer for financial news sentiment and EDA
-    """
+   
     
     def __init__(self, file_path=None):
-        """
-        Initialize the analyzer with either a file path
-        
-        Args:
-            file_path (str): Path to CSV file
-            
-        """
+       
         if file_path:
             self.data = self.load_data(file_path)
         
@@ -377,28 +368,28 @@ class FinancialSentimentAnalyzer:
         insights = []
         
         # Dataset insights
-        insights.append(f"📊 Dataset contains {report['dataset_info']['total_articles']:,} articles from {report['dataset_info']['unique_publishers']} publishers")
+        insights.append(f" Dataset contains {report['dataset_info']['total_articles']:,} articles from {report['dataset_info']['unique_publishers']} publishers")
         
         # Publisher insights
         top_pub = list(report['publisher_analysis']['top_publishers'].keys())[0]
-        insights.append(f"🏢 Top publisher '{top_pub}' contributed {report['publisher_analysis']['top_publishers'][top_pub]:,} articles")
+        insights.append(f" Top publisher '{top_pub}' contributed {report['publisher_analysis']['top_publishers'][top_pub]:,} articles")
         
         # Temporal insights
         if 'peak_hour' in report['temporal_analysis']:
-            insights.append(f"⏰ Peak publishing hour: {report['temporal_analysis']['peak_hour']}:00")
-            insights.append(f"📅 Most active day: {report['temporal_analysis']['most_active_day']}")
+            insights.append(f" Peak publishing hour: {report['temporal_analysis']['peak_hour']}:00")
+            insights.append(f" Most active day: {report['temporal_analysis']['most_active_day']}")
         
         # Sentiment insights
         sentiment = report['sentiment_analysis']
         pos_pct = (sentiment['overall_distribution'].get('Positive', 0) / sentiment['sample_size']) * 100
         neg_pct = (sentiment['overall_distribution'].get('Negative', 0) / sentiment['sample_size']) * 100
-        insights.append(f"😊 Sentiment: {pos_pct:.1f}% Positive, {neg_pct:.1f}% Negative")
-        insights.append(f"📈 Average sentiment score: {sentiment['average_sentiment']:.3f}")
+        insights.append(f" Sentiment: {pos_pct:.1f}% Positive, {neg_pct:.1f}% Negative")
+        insights.append(f" Average sentiment score: {sentiment['average_sentiment']:.3f}")
         
         # Topic insights
         topics = report['topic_analysis']['topic_counts']
         dominant_topic = max(topics, key=topics.get)
-        insights.append(f"🎯 Dominant topic: {dominant_topic.replace('_', ' ').title()} ({topics[dominant_topic]} mentions)")
+        insights.append(f" Dominant topic: {dominant_topic.replace('_', ' ').title()} ({topics[dominant_topic]} mentions)")
         
         return insights
     

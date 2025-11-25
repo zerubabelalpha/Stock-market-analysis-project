@@ -28,7 +28,7 @@ class CorrelationAnalysis:
         
         # Convert date and set index - REMOVE TIMEZONE for alignment
         news_data['date'] = pd.to_datetime(news_data['date'], format='ISO8601', utc=True)
-        news_data['date'] = news_data['date'].dt.tz_convert(None)  # Remove timezone
+        news_data['date'] = news_data['date'].dt.tz_convert(None)  
         news_data.set_index('date', inplace=True)
         
         # Calculate sentiment
@@ -122,6 +122,41 @@ class CorrelationAnalysis:
                 print(f"Lag {lag} day(s): {corr_lag:.4f} (p-value: {p_lag:.4f}) {significance}")
         
         return corr_coef, p_value
+    
+    def create_correlation_heatmap(self):
+        """
+        Create a simple correlation heatmap for all numerical variables
+        """
+        if self.merged_data is None:
+            print(" Please load data first using load_and_prepare_data()")
+            return
+        
+        print("\nCreating correlation heatmap...")
+        
+        # Select only numerical columns for correlation matrix
+        numerical_data = self.merged_data.select_dtypes(include=[np.number])
+        
+        # Calculate correlation matrix
+        corr_matrix = numerical_data.corr()
+        
+        # Create heatmap
+        plt.figure(figsize=(10, 8))
+        mask = np.triu(np.ones_like(corr_matrix, dtype=bool))  # Mask upper triangle
+        
+        sns.heatmap(corr_matrix, 
+                   mask=mask,
+                   annot=True, 
+                   cmap='coolwarm', 
+                   center=0,
+                   square=True,
+                   fmt='.3f',
+                   cbar_kws={'shrink': 0.8})
+        
+        plt.title('Correlation Heatmap: News Sentiment vs Stock Performance', fontsize=14, pad=20)
+        plt.tight_layout()
+        plt.show()
+        
+        return corr_matrix
 
     def create_correlation_visualizations(self):
         """
@@ -268,37 +303,3 @@ class CorrelationAnalysis:
         
         print("\n=== SUMMARY STATISTICS ===")
         return self.merged_data[['avg_sentiment', 'daily_return', 'news_count']].describe()
-
-
-
-
-
-# Example usage
-if __name__ == "__main__":
-    # Initialize the analyzer
-    analyzer = CorrelationAnalysis()
-    
-    # Load your data
-    news_data_path = "../data/newsData/raw_analyst_ratings.csv"
-    stock_data_path = "../data/yfinance_data/Data/AAPL.csv"
-    
-    try:
-        # Load and prepare data
-        merged_data, news_data, stock_data = analyzer.load_and_prepare_data(news_data_path, stock_data_path)
-        
-        if len(merged_data) > 0:
-            # Run all analyses
-            analyzer.calculate_correlations()
-            analyzer.create_correlation_visualizations()
-            analyzer.advanced_correlation_analysis()
-            analyzer.sentiment_category_analysis()
-            
-            # Print summary statistics
-            print(analyzer.get_summary_statistics())
-        else:
-            print(" No overlapping data found between news and stock datasets!")
-            
-    except Exception as e:
-        print(f" Error during analysis: {e}")
-        import traceback
-        print(traceback.format_exc())
